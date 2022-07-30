@@ -1,0 +1,68 @@
+
+1: Install TOMCAT on linux box
+							
+Step #1: Install Tomcat
+
+1.1 Create a Linux machine // Ubuntu 20.X
+Prereq: Install JAVA
+
+1.2: down load the package --> google doneload Apache Tomcat --> Version 8
+Copy the link address
+
+cd /opt
+wget https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.81/bin/apache-tomcat-8.5.81.tar.gz
+tar xzvf apache-tomcat-8.5.81.tar.gz
+mv apache-tomcat-8.5.81 tomcat
+
+cd tomcat
+cd bin/
+./startup.sh    ---> Tomcat started.
+
+Enabling remote access
+-------------------
+cd /opt/tomcat
+find / -name context.xml
+
+/opt/tomcat/webapps/manager/META-INF/context.xml
+/opt/tomcat/webapps/host-manager/META-INF/context.xml
+
+Backup of the Orignal files:
+cp -p /opt/tomcat/webapps/manager/META-INF/context.xml /opt/tomcat/webapps/manager/META-INF/context.xml_ORIG
+
+cp -p /opt/tomcat/webapps/host-manager/META-INF/context.xml /opt/tomcat/webapps/host-manager/META-INF/context.xml_ORIG
+
+
+vi /opt/tomcat/webapps/manager/META-INF/context.xml
+vi /opt/tomcat/webapps/host-manager/META-INF/context.xml
+
+Comment the below line over both the files:
+--------------
+
+<!--  <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+  allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /> -->
+
+Restarted Tomcat:
+--------------
+
+cd /opt/tomcat/bin
+./shutdown.sh 
+./startup.sh 
+
+Create users:
+vi /opt/tomcat/conf/tomcat-users.xml
+
+Addd these Roles and users at the end of the file:
+----------
+<role rolename="manager-gui" />
+<role rolename="manager-script" />
+<role rolename="manager-jmx" />
+<role rolename="manager-status" />
+<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status" />
+<user username="deployer" password="deployer" roles="manager-script" />
+<user username="tomcat" password="s3cert" roles="manager-gui" />
+
+Restarted Tomcat:
+--------------
+cd /opt/tomcat/bin
+./shutdown.sh 
+./startup.sh 
