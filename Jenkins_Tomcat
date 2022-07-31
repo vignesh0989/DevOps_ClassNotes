@@ -168,3 +168,78 @@ Build the job
 Deployment complete
 
 ****************************************
+
+
+Pipeline as code:
+
+Give permissions to ec2-user to make chnages to webapps directory
+
+chown -R ec2-user:ec2-user /opt
+
+Download a plugin that will connect to tomcat server form jenkins
+
+ plugin: ssh agent
+
+Using ssh copy the war file in the tomcat webapps directory
+
+sh 'scp /var/lib/jenkins/workspace/TomcatDeploypipeline/target/addressbook.war  ec2-user@3.129.17.201:/opt/tomcat/webapps'
+
+ command:  scp filenamelocation username@publicip:Destinationpath
+
+
+
+to do this step
+
+we need a plugin
+
+ssh agent
+
+  it connects to you tomcat server through jenkins using ssh
+
+   username : ec2-user
+
+   pem file
+
+copy the war file in the tomcat webapps directory
+
+
+
+
+Pipeline Code:
+
+pipeline{
+    
+    agent any
+    tools{
+        jdk 'myJAVA'
+        maven 'mymvn'
+    }
+    
+    stages{
+        stage('cloneRepo'){
+            steps{
+                git 'https://github.com/Sonal0409/DevOpsClassCodes.git'
+            }
+        }
+        stage('package')
+        {
+            steps{
+                sh 'mvn clean install package'
+            }
+        }
+        
+        stage('Deploy on tomcat'){
+            steps{
+                
+                sshagent(['idnew']) {
+     sh 'scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/TomcatDeploypipeline/target/addressbook.war  ec2-user@3.129.17.201:/opt/tomcat/webapps'
+}
+                
+            }
+            
+        }
+    }
+}
+
+ 
+
